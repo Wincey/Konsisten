@@ -1,9 +1,565 @@
-<doctype html>
-  <head>
-  <link rel="stylesheet" href="style.css">
-</head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O!Konsisten</title>
+    <style>
+        body {
+            background-color: rgb(56, 46, 46);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
 
+        .collapsible-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: rgb(70, 58, 57);
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            width: 80%;
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.2s ease-out;
+            position: relative;
+        }
+
+        .collapsible-container:hover {
+            background-color: #ccc;
+        }
+
+        .collapsible {
+            background-color: transparent;
+            color: inherit;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .collapsible:hover {
+            background-color: transparent;
+        }
+
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f9f9f9;
+            text-align: center;
+            transition: max-height 0.5s ease-out;
+            border-radius: 0 0 10px 10px; /* Bottom corners rounded */
+            max-height: 0;
+        }
+
+        .hcolor1 {
+            color: rgb(255, 255, 255);
+            text-align: center;
+        }
+
+        .edit-button {
+            border-radius: 5px; /* Match the radius of the responses */
+            background-color: rgb(60, 50, 50); /* Match the background color of the responses */
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            font-size: 15px;
+            margin-left: 10px;
+            position: absolute;
+            left: 10px; /* Move to the left side */
+            top: 50%;
+            transform: translateY(-50%); /* Center vertically */
+        }
+
+        .edit-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 10px;
+        }
+
+        .dropdown-content input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .dropdown-content input:focus {
+            outline: none;
+        }
+
+        .skill-tag-container {
+            position: absolute;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            z-index: 2; /* Ensure skill tags are on top */
+        }
+
+        .skill-tag {
+            background-color: rgb(60, 50, 50);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgb(56, 46, 46); /* Border color same as page */
+            cursor: pointer; /* Make skill tags clickable */
+            z-index: 3; /* Ensure skill tags are on top */
+        }
+
+        .skill-tag.aim {
+            background-color: #ff4d4d; /* Bright red */
+        }
+
+        .skill-tag.stream {
+            background-color: #4d79ff; /* Bright blue */
+        }
+
+        .skill-tag.speed {
+            background-color: #ffeb3b; /* Bright yellow */
+        }
+
+        .skill-tag.consistency {
+            background-color: #b366ff; /* Bright purple */
+        }
+
+        .skill-tag.farm {
+            background-color: #66ff66; /* Bright green */
+        }
+
+        .skill-tag.aim-slop {
+            background-color: #8b4513; /* Brown */
+            cursor: pointer;
+        }
+
+        .collapsible-container.break {
+            background-color: rgb(50, 40, 40);
+        }
+
+        .add-set {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background-color: rgb(50, 40, 40); /* Darker color */
+            color: rgb(255, 255, 255);
+            width: 80%;
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 15px;
+            border-radius: 0 0 10px 10px; /* Bottom corners rounded */
+            margin-top: -10px; /* Make it flush with the parent element */
+            cursor: pointer;
+            transition: max-height 0.5s ease-out; /* Add transition for smooth opening/closing */
+            max-height: 0;
+            position: relative;
+        }
+
+        .add-set .plus-circle {
+            position: absolute;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: rgb(70, 58, 57); /* Slightly lighter background color */
+            color: rgb(255, 255, 255);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .new-set {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: calc(80% - 20px); /* Slightly smaller than the parent element */
+            height: 40px; /* Fixed height */
+            padding: 10px;
+            background-color: rgb(60, 50, 50);
+            color: rgb(255, 255, 255);
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .new-set .edit-button {
+            position: absolute;
+            left: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: rgb(70, 58, 57); /* Slightly lighter background color */
+            color: rgb(255, 255, 255);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .new-set .delete-button {
+            position: absolute;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background-color: rgb(70, 58, 57); /* Slightly lighter background color */
+            color: rgb(255, 255, 255);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .collapsible-container.active {
+            border-radius: 10px 10px 0 0; /* Top corners rounded */
+        }
+
+        @media (max-width: 600px) {
+            .collapsible-container {
+                width: 95%;
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .dropdown-content {
+                min-width: 140px;
+                box-shadow: 0px 6px 12px 0px rgba(0,0,0,0.2);
+            }
+
+            .dropdown-content input {
+                padding: 10px 14px;
+            }
+
+            .edit-button {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .add-set {
+                width: 95%;
+                padding: 8px;
+                font-size: 14px;
+                margin-top: -8px; /* Adjust for smaller screens */
+            }
+
+            .add-set .plus-circle {
+                width: 18px;
+                height: 18px;
+                font-size: 16px;
+            }
+
+            .new-set {
+                width: calc(95% - 20px); /* Adjust for smaller screens */
+                height: 40px; /* Fixed height */
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .new-set .edit-button,
+            .new-set .delete-button {
+                width: 18px;
+                height: 18px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
 <body>
-<button type="button" class="collapsetest">Monday</button>
-  <text>hej</text>
+
+<h2 class="hcolor1">O!Konsisten</h2>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Sun</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Mon</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Tue</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Wed</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Thu</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Fri</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<div class="collapsible-container">
+    <div class="skill-tag-container"></div>
+    <button class="collapsible">Sat</button>
+    <div class="dropdown">
+        <button class="edit-button">&#9998;</button>
+        <div class="dropdown-content">
+            <input type="text" placeholder="Enter skill" maxlength="20" onblur="setOption(this)" onkeypress="handleKeyPress(event, this)">
+        </div>
+    </div>
+</div>
+<div class="content"></div>
+<div class="add-set"><div class="plus-circle" onclick="addSet(this)">+</div>Click + to add a set</div>
+
+<script>
+    var coll = document.getElementsByClassName("collapsible-container");
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function(event) {
+            if (event.target.classList.contains('skill-tag')) {
+                return; // Prevent collapsible from toggling when clicking on skill tag
+            }
+            var content = this.nextElementSibling;
+            var addSet = content.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                addSet.style.maxHeight = null;
+                addSet.style.display = "none";
+                this.classList.remove("active");
+            } else {
+                closeAllCollapsibles();
+                content.style.display = "block";
+                content.style.maxHeight = content.scrollHeight + "px";
+                addSet.style.display = "flex";
+                addSet.style.maxHeight = addSet.scrollHeight + "px";
+                this.classList.add("active");
+            }
+        });
+    }
+
+    function closeAllCollapsibles() {
+        var contents = document.getElementsByClassName("content");
+        var addSets = document.getElementsByClassName("add-set");
+        for (var i = 0; i < contents.length; i++) {
+            contents[i].style.maxHeight = null;
+            addSets[i].style.maxHeight = null;
+            addSets[i].style.display = "none";
+        }
+        var coll = document.getElementsByClassName("collapsible-container");
+        for (var i = 0; i < coll.length; i++) {
+            coll[i].classList.remove("active");
+        }
+    }
+
+    var editButtons = document.getElementsByClassName("edit-button");
+    for (var i = 0; i < editButtons.length; i++) {
+        editButtons[i].addEventListener("click", function(event) {
+            event.stopPropagation();
+            var dropdownContent = this.nextElementSibling;
+            if (dropdownContent.style.display === "block") {
+                dropdownContent.style.display = "none";
+            } else {
+                dropdownContent.style.display = "block";
+                dropdownContent.querySelector("input").focus();
+            }
+        });
+    }
+
+    window.addEventListener("click", function(event) {
+        if (!event.target.matches('.edit-button') && !event.target.matches('.dropdown-content input')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.style.display === "block") {
+                    openDropdown.style.display = "none";
+                }
+            }
+        }
+    });
+
+    function setOption(element) {
+        var selectedOption = element.value.trim().toLowerCase();
+        var editButton = element.closest('.dropdown').querySelector('.edit-button');
+        var skillTagContainer = element.closest('.collapsible-container').querySelector('.skill-tag-container');
+        var collapsibleContainer = element.closest('.collapsible-container');
+        skillTagContainer.innerHTML = ""; // Clear existing tags
+        if (selectedOption !== "") {
+            var skillTag = document.createElement('div');
+            skillTag.className = 'skill-tag';
+            skillTag.onclick = function(event) {
+                event.stopPropagation(); // Prevent collapsible from toggling
+                showEditInput(skillTag);
+            };
+
+            // Handle specific words and plurals
+            switch (selectedOption) {
+                case 'aim':
+                case 'aims':
+                case 'jumps':
+                    skillTag.classList.add('aim');
+                    skillTag.textContent = 'Aim';
+                    break;
+                case 'stream':
+                case 'streams':
+                    skillTag.classList.add('stream');
+                    skillTag.textContent = 'Stream';
+                    break;
+                case 'speed':
+                case 'speeds':
+                    skillTag.classList.add('speed');
+                    skillTag.textContent = 'Speed';
+                    break;
+                case 'consistency':
+                case 'consistencies':
+                    skillTag.classList.add('consistency');
+                    skillTag.textContent = 'Consistency';
+                    break;
+                case 'farm':
+                case 'farms':
+                    skillTag.classList.add('farm');
+                    skillTag.textContent = 'Farm';
+                    break;
+                case 'break':
+                case 'breaks':
+                    collapsibleContainer.classList.add('break');
+                    skillTag.textContent = 'Break';
+                    break;
+                case 'aim slop':
+                    skillTag.classList.add('aim-slop');
+                    skillTag.textContent = 'Aim Slop';
+                    skillTag.onclick = function() {
+                        window.open('https://osu.ppy.sh/users/4452992', '_blank');
+                    };
+                    break;
+                default:
+                    skillTag.textContent = selectedOption.charAt(0).toUpperCase() + selectedOption.slice(1);
+                    skillTag.style.backgroundColor = 'rgb(60, 50, 50)'; // Default color
+            }
+
+            skillTagContainer.appendChild(skillTag);
+            editButton.style.display = "none"; // Hide the edit button if input is not empty
+        } else {
+            editButton.style.display = "block"; // Show the edit button if input is empty
+        }
+        element.parentElement.style.display = "none";
+    }
+
+    function handleKeyPress(event, element) {
+        if (event.key === "Enter") {
+            setOption(element);
+        }
+    }
+
+    function showEditInput(skillTag) {
+        var dropdownContent = skillTag.closest('.collapsible-container').querySelector('.dropdown-content');
+        dropdownContent.style.display = "block";
+        dropdownContent.querySelector("input").focus();
+    }
+
+    function addSet(element) {
+        var parent = element.closest('.add-set').previousElementSibling;
+        var newSet = document.createElement('div');
+        newSet.className = 'new-set';
+        newSet.innerHTML = '<div class="edit-button" onclick="editSet(this)">&#9998;</div><div class="set-text">New Set</div><div class="delete-button" onclick="deleteSet(this)">&#10006;</div>';
+        parent.appendChild(newSet);
+    }
+
+    function editSet(element) {
+        var setText = element.nextElementSibling;
+        var newText = prompt("Edit set text:", setText.textContent);
+        if (newText !== null) {
+            setText.textContent = newText;
+        }
+    }
+
+    function deleteSet(element) {
+        var set = element.closest('.new-set');
+        set.remove();
+    }
+</script>
+
 </body>
+</html>
